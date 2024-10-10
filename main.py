@@ -1,29 +1,22 @@
 import serial
-import time
-
 
 def read_from_bluetooth(com_port):
-    # Set up the serial connection
-    ser = serial.Serial(com_port, 9600)  # replace 9600 with your baud rate
-    ser.flushInput()
+    ser = serial.Serial(com_port, 9600, timeout=1)
+    print(f"Connected to {ser.portstr}")
 
     try:
         while True:
-            # Read a line of data from the serial port
-            ser_bytes = ser.readline().decode("utf-8").strip()
-
-            # Print the received data to the console
-            print(f"Received: {ser_bytes}")
+            ser_bytes = ser.readline().decode("utf-8").rstrip()
+            if ser_bytes:
+                print(ser_bytes)
+            else:
+                print("No data received. Is the device sending data?")
 
     except KeyboardInterrupt:
-        # Gracefully handle Ctrl+C
-        print("Disconnected")
-
+        print("\nBluetooth Disconnected...\n")
     finally:
-        # Ensure the serial connection is closed
         ser.close()
 
-
 if __name__ == "__main__":
-    com_port = "COM9"
+    com_port = "/dev/ttys003"  # This should match the virtual serial port
     read_from_bluetooth(com_port)
